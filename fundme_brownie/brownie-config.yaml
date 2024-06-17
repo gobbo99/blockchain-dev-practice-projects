@@ -1,0 +1,22 @@
+dependencies:
+  # - <organization/repo>@<version>
+  - smartcontractkit/chainlink-brownie-contracts@1.1.1
+compiler:
+  solc:
+    optimizer:
+      enabled: true
+      runs: 199
+    remappings:
+      - '@chainlink=smartcontractkit/chainlink-brownie-contracts@1.1.1'
+wallets:
+  from_key: ${PKEY}
+dotenv: .env
+etherscan:
+    token: KJZSD5RZH2XEI8M6GQ2PEBB7NDYM4GEKG9
+networks:
+  default: development
+  sepolia:
+    explorer: 'https://api-sepolia.etherscan.io/api'
+
+
+
