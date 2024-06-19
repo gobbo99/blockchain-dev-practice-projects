@@ -1,19 +1,23 @@
-import os
 import time
-import json
 
-from brownie import accounts, FundMe, Contract, network, config
-from .helper import get_account
+from brownie import accounts, MockV3Aggregator, FundMe, Contract, network, config
+from web3 import Web3
+from .helper import get_account, deploy_mocks, LOCAL_BLOCKCHAIN_ENVIRONMENTS
 
 
 def deploy_fund_me():
     mark = time.time()
     acc = get_account()
-    try:
-        fund_me = FundMe.deploy({"from": acc}, publish_source=True)
-    except(Exception) as e:
-        print(e)
+    active_network = network.show_active()
+    print(f"Network is set to: {active_network}")
+    if active_network in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        caddr = deploy_mocks()
+    else:
+        caddr = config['networks'][active_network]['price_feed']
+    fund_me = FundMe.deploy(caddr, {"from": acc}, publish_source=config["networks"][active_network].get("verify"))
+    print(f"Fundme contract deployed to {fund_me.address}")
     print(f"\nElapsed: {time.time() - mark}s")
+    return fund_me
 
 
 def publish():

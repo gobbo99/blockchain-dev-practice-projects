@@ -11,9 +11,11 @@ contract FundMe {
     mapping(address => uint256) public addressAmountMapping;
     address[] public funders;
     address public owner;
+    AggregatorV3Interface public priceFeed;
 
-    constructor() public {
+    constructor(address _priceFeed) public {
         owner = msg.sender;
+        priceFeed = AggregatorV3Interface(_priceFeed);
     }
 
     modifier onlyOwner {
@@ -38,24 +40,25 @@ contract FundMe {
         funders = new address[](0); // specifying array size
     }
 
+    function getEntranceFee() public view returns (uint256) {
+        uint256 inUsd = 50;
+        uint256 precision = 1 * 10**18;
+        uint256 ethUsd = getPrice();  // returns with 18 decimals precision
+        return (inUsd * precision * 10**18) / ethUsd;   // because getPrice() adds 10^10 +
+    }
+
     function getVersion() public view returns (uint256) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(
-            0x694AA1769357215DE4FAC081bf1f309aDC325306
-        );
         return priceFeed.version();
     }
 
     function getPrice() internal view returns (uint256) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(
-            0x694AA1769357215DE4FAC081bf1f309aDC325306
-        );
         (, int256 answer, , , ) = priceFeed.latestRoundData();
-        return uint256(answer * 10000000000);  // 18 numbers
+        return uint256(answer * 10000000000);  // non eth pair, ethusd, so 8 decimals precision
     }
 
     function getConversionRate(uint256 ethAmount) public view returns (uint256) {
         uint256 ethPrice = getPrice();
-        uint256 usdValue = ethPrice * ethAmount / 1000000000000000000;  // 10^18
+        uint256 usdValue = (ethPrice * ethAmount) / 1000000000000000000;  // 10^18
         return usdValue;
     }
 }

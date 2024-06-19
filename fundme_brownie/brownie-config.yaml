@@ -14,9 +14,20 @@ dotenv: .env
 etherscan:
     token: KJZSD5RZH2XEI8M6GQ2PEBB7NDYM4GEKG9
 networks:
-  default: development
+  default: ganache-local
+  mainnet-fork-dev:
+    price_feed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'
+    verify: False
+  development:
+    verify: False
+  ganache-local:
+    verify: False
+  ganache-local-gui:
+    verify: False
   sepolia:
     explorer: 'https://api-sepolia.etherscan.io/api'
+    price_feed: '0x694AA1769357215DE4FAC081bf1f309aDC325306'
+    verify: True
 
 
 
